@@ -21,17 +21,8 @@ pipeline {
                 script {
                     sh 'docker push chaithrabekal/surveyform645:${BUILD_TIMESTAMP}'
                 }
-                // withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
-                //     // Change the tag name of the Docker image
-                //     sh 'docker build -t my-docker-image:${env.BUILD_NUMBER} .'
-                //     sh 'docker push my-docker-image:${env.BUILD_NUMBER}' // Push the Docker image to Docker Hub
-                // }
-
-                // withRancherServer(serverUrl: 'https://rancher.example.com', credentialsId: 'rancher-credentials') {
-                //     // Push the Docker image to a Rancher registry
-                //     sh 'docker push rancher-registry.example.com/my-docker-image:${env.BUILD_NUMBER}'
-                }
             }
+        }
             stage('Rancher deployment') {
                 steps {
                     script {
