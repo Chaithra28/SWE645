@@ -7,9 +7,9 @@ pipeline {
         stage('Building the image') {
             steps {
                 script {
-                    //sh 'rm -rf *.war'
-                    sh 'jar -cvf surveyform.war -C WebApps/ .'
-                    sh 'echo ${BUILD_TIMESTAMP}'
+                    sh "rm -rf *.war"
+                    sh "jar -cvf surveyform.war -C WebApps/ ."
+                    sh "echo ${BUILD_TIMESTAMP}"
                     sh "docker login -u chaithrabekal -p ${DockerHubPass}"
                     def customImage = docker.build("chaithrabekal/surveyform645:${BUILD_TIMESTAMP}")
                 }
@@ -19,14 +19,14 @@ pipeline {
         stage('DockerHub Push') {
             steps {
                 script {
-                    sh 'docker push chaithrabekal/surveyform645:${BUILD_TIMESTAMP}'
+                    sh "docker push chaithrabekal/surveyform645:${BUILD_TIMESTAMP}"
                 }
             }
         }
             stage('Rancher deployment') {
                 steps {
                     script {
-                        sh 'kubectl set image deployment/clusterdeploymenthw2 clusterdeploymenthw2=chaithrabekal/surveyform645:${BUILD_TIMESTAMP} -n jenkins-pipeline'
+                        sh "kubectl set image deployment/clusterdeploymenthw2 clusterdeploymenthw2=chaithrabekal/surveyform645:${BUILD_TIMESTAMP} -n jenkins-pipeline"
                     }
                 }
             }
