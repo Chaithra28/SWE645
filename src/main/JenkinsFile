@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+    environment {
+        DockerHubPass = credentials('Chaiyu@1998')
+    }
+    stages {
+        stage('Building the image') {
+            steps {
+                script {
+                    sh 'rm -rf *.war'
+                    sh 'jar -cvf surveyform.war -C WebApps/ .'
+                    sh 'echo ${BUILD_TIMESTAMP}'
+                    sh "docker login -u chaithrabekal -p ${DockerHubPass}"
+                    def customImage = docker.build("chaithrabekal/surveyform645:${BUILD_TIMESTAMP}")
+                }
+            }
+        }
+
+        stage('DockerHub Push') {
+            steps {
+                script {
+                    sh 'docker push chaithrabekal/surveyform645:${BUILD_TIMESTAMP}'
+                }
+                // withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
+                //     // Change the tag name of the Docker image
+                //     sh 'docker build -t my-docker-image:${env.BUILD_NUMBER} .'
+                //     sh 'docker push my-docker-image:${env.BUILD_NUMBER}' // Push the Docker image to Docker Hub
+                // }
+
+                // withRancherServer(serverUrl: 'https://rancher.example.com', credentialsId: 'rancher-credentials') {
+                //     // Push the Docker image to a Rancher registry
+                //     sh 'docker push rancher-registry.example.com/my-docker-image:${env.BUILD_NUMBER}'
+                }
+            }
+            stage('Rancher deployment') {
+                steps {
+                    script {
+                        sh 'kubectl set image deployment/clusterdeploymenthw2 clusterdeploymenthw2=chaithrabekal/surveyform645:${BUILD_TIMESTAMP} -n jenkins-pipeline'
+                    }
+                }
+            }
+        }
+    }
+}
