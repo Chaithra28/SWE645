@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DockerHubPass = credentials('chaithrabekal')
+        DockerHubPass = credentialsId('chaithrabekal')
     }
     stages {
         stage('Building the image') {
